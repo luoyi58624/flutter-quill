@@ -2,6 +2,7 @@ library flutter_quill;
 
 export '/src/widgets/raw_editor/quill_single_child_scroll_view.dart';
 export 'src/extensions/quill_configurations_ext.dart';
+export 'src/l10n/widgets/localizations.dart';
 export 'src/models/config/quill_configurations.dart';
 export 'src/models/config/raw_editor/raw_editor_configurations.dart';
 export 'src/models/config/toolbar/toolbar_configurations.dart';
@@ -25,8 +26,7 @@ export 'src/utils/embeds.dart';
 export 'src/widgets/editor/editor.dart';
 export 'src/widgets/others/cursor.dart';
 export 'src/widgets/others/default_styles.dart';
-export 'src/widgets/others/link.dart'
-    show LinkActionPickerDelegate, LinkMenuAction;
+export 'src/widgets/others/link.dart' show LinkActionPickerDelegate, LinkMenuAction;
 export 'src/widgets/quill/embeds.dart';
 export 'src/widgets/quill/quill_controller.dart';
 export 'src/widgets/raw_editor/raw_editor.dart';

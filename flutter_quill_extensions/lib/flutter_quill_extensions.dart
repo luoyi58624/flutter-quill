@@ -7,6 +7,7 @@ export 'embeds/image/editor/image_embed_types.dart';
 export 'embeds/image/editor/image_web_embed.dart';
 export 'embeds/image/toolbar/image_button.dart';
 export 'embeds/others/camera_button/camera_button.dart';
+export 'embeds/others/image_video_utils.dart';
 export 'embeds/others/media_button/media_button.dart';
 export 'embeds/unknown/editor/unknown_embed.dart';
 export 'embeds/video/editor/video_embed.dart';
