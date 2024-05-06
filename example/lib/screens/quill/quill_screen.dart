@@ -90,8 +90,7 @@ class _QuillScreenState extends State<QuillScreen> {
               MenuItemButton(
                 onPressed: () async {
                   final pdfDocument = pw.Document();
-                  final pdfWidgets =
-                      await _controller.document.toDelta().toPdf();
+                  final pdfWidgets = await _controller.document.toDelta().toPdf();
                   pdfDocument.addPage(
                     pw.MultiPage(
                       maxPages: 200,
@@ -101,8 +100,7 @@ class _QuillScreenState extends State<QuillScreen> {
                       },
                     ),
                   );
-                  await Printing.layoutPdf(
-                      onLayout: (format) async => pdfDocument.save());
+                  await Printing.layoutPdf(onLayout: (format) async => pdfDocument.save());
                 },
                 child: const Text('Print as PDF'),
               ),
@@ -149,13 +147,16 @@ class _QuillScreenState extends State<QuillScreen> {
           Builder(
             builder: (context) {
               return Expanded(
-                child: MyQuillEditor(
-                  configurations: QuillEditorConfigurations(
-                    sharedConfigurations: _sharedConfigurations,
-                    controller: _controller,
+                child: IgnorePointer(
+                  ignoring: _isReadOnly,
+                  child: MyQuillEditor(
+                    configurations: QuillEditorConfigurations(
+                      sharedConfigurations: _sharedConfigurations,
+                      controller: _controller,
+                    ),
+                    scrollController: _editorScrollController,
+                    focusNode: _editorFocusNode,
                   ),
-                  scrollController: _editorScrollController,
-                  focusNode: _editorFocusNode,
                 ),
               );
             },
@@ -164,7 +165,10 @@ class _QuillScreenState extends State<QuillScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(_isReadOnly ? Icons.lock : Icons.edit),
-        onPressed: () => setState(() => _isReadOnly = !_isReadOnly),
+        onPressed: () {
+          setState(() => _isReadOnly = !_isReadOnly);
+          _editorFocusNode.unfocus();
+        },
       ),
     );
   }
@@ -173,8 +177,7 @@ class _QuillScreenState extends State<QuillScreen> {
     return const QuillSharedConfigurations(
       // locale: Locale('en'),
       extraConfigurations: {
-        QuillSharedExtensionsConfigurations.key:
-            QuillSharedExtensionsConfigurations(
+        QuillSharedExtensionsConfigurations.key: QuillSharedExtensionsConfigurations(
           assetsPrefix: 'assets', // Defaults to assets
         ),
       },
