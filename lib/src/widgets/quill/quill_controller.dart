@@ -4,7 +4,6 @@ import 'package:flutter/services.dart' show ClipboardData, Clipboard;
 import 'package:flutter/widgets.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:meta/meta.dart';
-import 'package:super_clipboard/super_clipboard.dart';
 
 import '../../../flutter_quill.dart';
 import '../../../quill_delta.dart';
@@ -29,8 +28,7 @@ class QuillController extends ChangeNotifier {
         _selection = selection;
 
   factory QuillController.basic(
-      {QuillControllerConfigurations configurations =
-          const QuillControllerConfigurations()}) {
+      {QuillControllerConfigurations configurations = const QuillControllerConfigurations()}) {
     return QuillController(
       configurations: configurations,
       document: Document(),
@@ -114,9 +112,7 @@ class QuillController extends ChangeNotifier {
   /// Only attributes applied to all characters within this range are
   /// included in the result.
   Style getSelectionStyle() {
-    return document
-        .collectStyle(selection.start, selection.end - selection.start)
-        .mergeAll(toggledStyle);
+    return document.collectStyle(selection.start, selection.end - selection.start).mergeAll(toggledStyle);
   }
 
   // Increases or decreases the indent of the current selection by 1.
@@ -185,23 +181,19 @@ class QuillController extends ChangeNotifier {
 
   /// Returns all styles and Embed for each node within selection
   List<OffsetValue> getAllIndividualSelectionStylesAndEmbed() {
-    final stylesAndEmbed = document.collectAllIndividualStyleAndEmbed(
-        selection.start, selection.end - selection.start);
+    final stylesAndEmbed = document.collectAllIndividualStyleAndEmbed(selection.start, selection.end - selection.start);
     return stylesAndEmbed;
   }
 
   /// Returns plain text for each node within selection
   String getPlainText() {
-    final text =
-        document.getPlainText(selection.start, selection.end - selection.start);
+    final text = document.getPlainText(selection.start, selection.end - selection.start);
     return text;
   }
 
   /// Returns all styles for any character within the specified text range.
   List<Style> getAllSelectionStyles() {
-    final styles = document.collectAllStyles(
-        selection.start, selection.end - selection.start)
-      ..add(toggledStyle);
+    final styles = document.collectAllStyles(selection.start, selection.end - selection.start)..add(toggledStyle);
     return styles;
   }
 
@@ -247,8 +239,7 @@ class QuillController extends ChangeNotifier {
 
   /// clear editor
   void clear() {
-    replaceText(0, plainTextEditingValue.text.length - 1, '',
-        const TextSelection.collapsed(offset: 0));
+    replaceText(0, plainTextEditingValue.text.length - 1, '', const TextSelection.collapsed(offset: 0));
   }
 
   void replaceText(
@@ -274,13 +265,9 @@ class QuillController extends ChangeNotifier {
           delta.last.isInsert &&
           // pasted text should not use toggledStyle
           (data is! String || data.length < 2);
-      if (shouldRetainDelta &&
-          toggledStyle.isNotEmpty &&
-          delta.length == 2 &&
-          delta.last.data == '\n') {
+      if (shouldRetainDelta && toggledStyle.isNotEmpty && delta.length == 2 && delta.last.data == '\n') {
         // if all attributes are inline, shouldRetainDelta should be false
-        final anyAttributeNotInline =
-            toggledStyle.values.any((attr) => !attr.isInline);
+        final anyAttributeNotInline = toggledStyle.values.any((attr) => !attr.isInline);
         if (!anyAttributeNotInline) {
           shouldRetainDelta = false;
         }
@@ -325,8 +312,7 @@ class QuillController extends ChangeNotifier {
   /// forward == true && textAfter.isEmpty
   /// Android only
   /// see https://github.com/singerdmx/flutter-quill/discussions/514
-  void handleDelete(int cursorPosition, bool forward) =>
-      onDelete?.call(cursorPosition, forward);
+  void handleDelete(int cursorPosition, bool forward) => onDelete?.call(cursorPosition, forward);
 
   void formatTextStyle(int index, int len, Style style) {
     style.attributes.forEach((key, attr) {
@@ -340,9 +326,7 @@ class QuillController extends ChangeNotifier {
     Attribute? attribute, {
     bool shouldNotifyListeners = true,
   }) {
-    if (len == 0 &&
-        attribute!.isInline &&
-        attribute.key != Attribute.link.key) {
+    if (len == 0 && attribute!.isInline && attribute.key != Attribute.link.key) {
       // Add the attribute to our toggledStyle.
       // It will be used later upon insertion.
       toggledStyle = toggledStyle.put(attribute);
@@ -363,8 +347,7 @@ class QuillController extends ChangeNotifier {
     }
   }
 
-  void formatSelection(Attribute? attribute,
-      {bool shouldNotifyListeners = true}) {
+  void formatSelection(Attribute? attribute, {bool shouldNotifyListeners = true}) {
     formatText(
       selection.start,
       selection.end - selection.start,
@@ -446,13 +429,11 @@ class QuillController extends ChangeNotifier {
     super.dispose();
   }
 
-  void _updateSelection(TextSelection textSelection,
-      {bool insertNewline = false}) {
+  void _updateSelection(TextSelection textSelection, {bool insertNewline = false}) {
     _selection = textSelection;
     final end = document.length - 1;
     _selection = selection.copyWith(
-        baseOffset: math.min(selection.baseOffset, end),
-        extentOffset: math.min(selection.extentOffset, end));
+        baseOffset: math.min(selection.baseOffset, end), extentOffset: math.min(selection.extentOffset, end));
     if (keepStyleOnNewLine) {
       if (insertNewline && selection.start > 0) {
         final style = document.collectStyle(selection.start - 1, 0);
@@ -503,8 +484,7 @@ class QuillController extends ChangeNotifier {
       if (!copy) {
         if (readOnly) return false;
         final sel = selection;
-        replaceText(sel.start, sel.end - sel.start, '',
-            TextSelection.collapsed(offset: sel.start));
+        replaceText(sel.start, sel.end - sel.start, '', TextSelection.collapsed(offset: sel.start));
       }
       return true;
     }
@@ -529,8 +509,7 @@ class QuillController extends ChangeNotifier {
         selection.start,
         selection.end - selection.start,
         plainText.text!,
-        TextSelection.collapsed(
-            offset: selection.start + plainText.text!.length),
+        TextSelection.collapsed(offset: selection.start + plainText.text!.length),
       );
       updateEditor?.call();
       return true;
@@ -545,27 +524,6 @@ class QuillController extends ChangeNotifier {
   }
 
   Future<bool> _pasteHTML() async {
-    final clipboard = SystemClipboard.instance;
-    if (clipboard != null) {
-      final reader = await clipboard.read();
-      if (reader.canProvide(Formats.htmlText)) {
-        final html = await reader.readValue(Formats.htmlText);
-        if (html == null) {
-          return false;
-        }
-        final htmlBody = html_parser.parse(html).body?.outerHtml;
-        final deltaFromClipboard = DeltaX.fromHtml(htmlBody ?? html);
-
-        replaceText(
-          selection.start,
-          selection.end - selection.start,
-          deltaFromClipboard,
-          TextSelection.collapsed(offset: selection.end),
-        );
-
-        return true;
-      }
-    }
     return false;
   }
 
@@ -577,10 +535,8 @@ class QuillController extends ChangeNotifier {
     bool ignoreFocus = false,
     bool shouldNotifyListeners = true,
   }) {
-    final containsEmbed =
-        insertedText.codeUnits.contains(Embed.kObjectReplacementInt);
-    insertedText =
-        containsEmbed ? _adjustInsertedText(insertedText) : insertedText;
+    final containsEmbed = insertedText.codeUnits.contains(Embed.kObjectReplacementInt);
+    insertedText = containsEmbed ? _adjustInsertedText(insertedText) : insertedText;
 
     replaceText(index, len, insertedText, textSelection,
         ignoreFocus: ignoreFocus, shouldNotifyListeners: shouldNotifyListeners);
@@ -588,10 +544,8 @@ class QuillController extends ChangeNotifier {
     _applyPasteStyleAndEmbed(insertedText, index, containsEmbed);
   }
 
-  void _applyPasteStyleAndEmbed(
-      String insertedText, int start, bool containsEmbed) {
-    if (insertedText == pastePlainText && pastePlainText != '' ||
-        containsEmbed) {
+  void _applyPasteStyleAndEmbed(String insertedText, int start, bool containsEmbed) {
+    if (insertedText == pastePlainText && pastePlainText != '' || containsEmbed) {
       final pos = start;
       for (final p in pasteStyleAndEmbed) {
         final offset = p.offset;

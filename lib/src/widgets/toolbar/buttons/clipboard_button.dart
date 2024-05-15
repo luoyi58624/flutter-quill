@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:super_clipboard/super_clipboard.dart';
 
 import '../../../../extensions.dart';
 import '../../../../flutter_quill.dart';
@@ -19,22 +18,14 @@ class ClipboardMonitor {
   void monitorClipboard(bool add, void Function() listener) {
     if (kIsWeb) return;
     if (add) {
-      _timer = Timer.periodic(
-          const Duration(seconds: 1), (timer) => _update(listener));
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) => _update(listener));
     } else {
       _timer?.cancel();
     }
   }
 
   Future<void> _update(void Function() listener) async {
-    final reader = await SystemClipboard.instance?.read();
-    if (reader != null) {
-      final available = reader.platformFormats;
-      if (_canPaste != available.isNotEmpty) {
-        _canPaste = available.isNotEmpty;
-        listener();
-      }
-    }
+    _canPaste = true;
   }
 }
 
@@ -53,9 +44,7 @@ class QuillToolbarClipboardButton extends QuillToolbarToggleStyleBaseButton {
   State<StatefulWidget> createState() => QuillToolbarClipboardButtonState();
 }
 
-class QuillToolbarClipboardButtonState
-    extends QuillToolbarToggleStyleBaseButtonState<
-        QuillToolbarClipboardButton> {
+class QuillToolbarClipboardButtonState extends QuillToolbarToggleStyleBaseButtonState<QuillToolbarClipboardButton> {
   @override
   bool get currentStateValue {
     switch (widget.clipboardAction) {
@@ -114,8 +103,7 @@ class QuillToolbarClipboardButtonState
 
   @override
   Widget build(BuildContext context) {
-    final childBuilder = options.childBuilder ??
-        context.quillToolbarBaseButtonOptions?.childBuilder;
+    final childBuilder = options.childBuilder ?? context.quillToolbarBaseButtonOptions?.childBuilder;
     if (childBuilder != null) {
       return childBuilder(
         options,
