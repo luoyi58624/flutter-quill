@@ -2,10 +2,8 @@ import 'package:flutter/cupertino.dart' show showCupertinoModalPopup;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/extensions.dart';
-import 'package:flutter_quill/flutter_quill.dart'
-    show ImageUrl, QuillController, StyleAttribute, getEmbedNode;
+import 'package:flutter_quill/flutter_quill.dart' show ImageUrl, QuillController, StyleAttribute, getEmbedNode;
 import 'package:flutter_quill/translations.dart';
-import 'package:super_clipboard/super_clipboard.dart';
 
 import '../../../models/config/image/editor/image_configurations.dart';
 import '../../../models/config/shared_configurations.dart';
@@ -88,20 +86,12 @@ class ImageOptionsMenu extends StatelessWidget {
             title: Text(context.loc.copy),
             onTap: () async {
               final navigator = Navigator.of(context);
-              final imageNode =
-                  getEmbedNode(controller, controller.selection.start).value;
+              final imageNode = getEmbedNode(controller, controller.selection.start).value;
               final image = imageNode.value.data;
               controller.copiedImageUrl = ImageUrl(
                 image,
                 getImageStyleString(controller),
               );
-
-              final data = await convertImageToUint8List(image);
-              final clipboard = SystemClipboard.instance;
-              if (data != null) {
-                final item = DataWriterItem()..add(Formats.png(data));
-                await clipboard?.write([item]);
-              }
               navigator.pop();
             },
           ),
@@ -116,9 +106,7 @@ class ImageOptionsMenu extends StatelessWidget {
                 Navigator.of(context).pop();
 
                 // Call the remove check callback if set
-                if (await configurations.shouldRemoveImageCallback
-                        ?.call(imageSource) ==
-                    false) {
+                if (await configurations.shouldRemoveImageCallback?.call(imageSource) == false) {
                   return;
                 }
 
@@ -162,10 +150,8 @@ class ImageOptionsMenu extends StatelessWidget {
                 }
 
                 var message = switch (saveImageResult.method) {
-                  SaveImageResultMethod.network =>
-                    localizations.savedUsingTheNetwork,
-                  SaveImageResultMethod.localStorage =>
-                    localizations.savedUsingLocalStorage,
+                  SaveImageResultMethod.network => localizations.savedUsingTheNetwork,
+                  SaveImageResultMethod.localStorage => localizations.savedUsingLocalStorage,
                 };
 
                 if (isDesktop(supportWeb: false)) {
@@ -186,9 +172,7 @@ class ImageOptionsMenu extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (_) => ImageTapWrapper(
-                  assetsPrefix:
-                      QuillSharedExtensionsConfigurations.get(context: context)
-                          .assetsPrefix,
+                  assetsPrefix: QuillSharedExtensionsConfigurations.get(context: context).assetsPrefix,
                   imageUrl: imageSource,
                   configurations: configurations,
                 ),
